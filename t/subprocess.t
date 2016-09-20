@@ -143,4 +143,27 @@ $subprocess->run(
 Mojo::IOLoop->start;
 like $fail, qr/Whatever/, 'right error';
 
+# Blessed result with FREEZE/THAW
+{package Mojo::IOLoop::Subprocess::Sereal::TestFreeze;
+  use Mojo::Base -base;
+  has 'abc';
+  sub FREEZE { $_[0]->abc }
+  sub THAW { $_[0]->new(abc => $_[2]) }
+}
+
+($fail, $result) = (undef, undef);
+my $subprocess = Mojo::IOLoop::Subprocess::Sereal->new;
+$subprocess->run(
+  sub { Mojo::IOLoop::Subprocess::Sereal::TestFreeze->new(abc => 'test') },
+  sub {
+    my ($subprocess, $err, $obj) = @_;
+    $fail = $err;
+    $result = $obj;
+  }
+);
+Mojo::IOLoop->start;
+ok !$fail, 'no error';
+isa_ok $result, 'Mojo::IOLoop::Subprocess::Sereal::TestFreeze';
+is $result->abc, 'test', 'right attribute value';
+
 done_testing();

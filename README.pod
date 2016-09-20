@@ -30,8 +30,14 @@ Mojo::IOLoop::Subprocess::Sereal - Subprocesses with Sereal
 =head1 DESCRIPTION
 
 L<Mojo::IOLoop::Subprocess::Sereal> is a subclass of
-L<Mojo::IOLoop::Subprocess> which uses L<Sereal> for data serialization. Note
-that L<Mojo::IOLoop::Subprocess> is EXPERIMENTAL and thus so is this module!
+L<Mojo::IOLoop::Subprocess> which uses L<Sereal> for data serialization.
+L<Sereal> is faster than L<Storable> and supports serialization of more
+reference types such as C<Regexp>. The
+L<Sereal::Encoder/"FREEZE/THAW CALLBACK MECHANISM"> is supported to control
+serialization of blessed objects.
+
+Note that L<Mojo::IOLoop::Subprocess> is EXPERIMENTAL and thus so is this
+module!
 
 =head1 ATTRIBUTES
 

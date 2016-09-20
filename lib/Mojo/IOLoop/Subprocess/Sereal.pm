@@ -9,7 +9,7 @@ our $VERSION = '0.001';
 my $deserializer = Sereal::Decoder->new;
 has deserialize => sub { sub { sereal_decode_with_object $deserializer, $_[0] } };
 
-my $serializer = Sereal::Encoder->new;
+my $serializer = Sereal::Encoder->new({freeze_callbacks => 1});
 has serialize => sub { sub { sereal_encode_with_object $serializer, $_[0] } };
 
 1;
@@ -44,8 +44,14 @@ Mojo::IOLoop::Subprocess::Sereal - Subprocesses with Sereal
 =head1 DESCRIPTION
 
 L<Mojo::IOLoop::Subprocess::Sereal> is a subclass of
-L<Mojo::IOLoop::Subprocess> which uses L<Sereal> for data serialization. Note
-that L<Mojo::IOLoop::Subprocess> is EXPERIMENTAL and thus so is this module!
+L<Mojo::IOLoop::Subprocess> which uses L<Sereal> for data serialization.
+L<Sereal> is faster than L<Storable> and supports serialization of more
+reference types such as C<Regexp>. The
+L<Sereal::Encoder/"FREEZE/THAW CALLBACK MECHANISM"> is supported to control
+serialization of blessed objects.
+
+Note that L<Mojo::IOLoop::Subprocess> is EXPERIMENTAL and thus so is this
+module!
 
 =head1 ATTRIBUTES
 
