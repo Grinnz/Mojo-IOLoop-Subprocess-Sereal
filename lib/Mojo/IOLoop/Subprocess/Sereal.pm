@@ -4,7 +4,7 @@ use Mojo::Base 'Mojo::IOLoop::Subprocess';
 use Sereal::Decoder 'sereal_decode_with_object';
 use Sereal::Encoder 'sereal_encode_with_object';
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 my $deserializer = Sereal::Decoder->new;
 has deserialize => sub { sub { sereal_decode_with_object $deserializer, $_[0] } };
