@@ -1,4 +1,7 @@
 {{$NEXT}}
+  - Remove subclass interface in favor of exported $_subprocess method
+    (This module does say EXPERIMENTAL!)
+  - Export $_subprocess method by default
 
 0.002     2016-09-27 00:34:55 EDT
   - Export $_subprocess method as drop-in for Mojo::IOLoop->subprocess()

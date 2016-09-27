@@ -1,16 +1,16 @@
-use Mojo::Base -strict;
+use strict;
+use warnings;
 
 BEGIN { $ENV{MOJO_REACTOR} = 'Mojo::Reactor::Poll' }
 
 use Test::More;
 
 use Mojo::IOLoop;
-use Mojo::IOLoop::Subprocess::Sereal '$_subprocess';
+use Mojo::IOLoop::Subprocess::Sereal;
 
 # Huge result
 my ($fail, $result);
-my $subprocess = Mojo::IOLoop::Subprocess::Sereal->new;
-$subprocess->run(
+my $subprocess = Mojo::IOLoop->$_subprocess(
   sub { shift->pid . $$ . ('x' x 100000) },
   sub {
     my ($subprocess, $err, $two) = @_;
@@ -40,8 +40,7 @@ is_deeply $result, ['♥'], 'right structure';
 
 # Multiple return values
 ($fail, $result) = ();
-$subprocess = Mojo::IOLoop::Subprocess::Sereal->new;
-$subprocess->run(
+$subprocess = Mojo::IOLoop->$_subprocess(
   sub { return '♥', [{two => 2}], 3 },
   sub {
     my ($subprocess, $err, @results) = @_;
@@ -55,8 +54,7 @@ is_deeply $result, ['♥', [{two => 2}], 3], 'right structure';
 
 # Event loop in subprocess
 ($fail, $result) = ();
-$subprocess = Mojo::IOLoop::Subprocess::Sereal->new;
-$subprocess->run(
+$subprocess = Mojo::IOLoop->$_subprocess(
   sub {
     my $result;
     Mojo::IOLoop->next_tick(sub { $result = 23 });
@@ -92,7 +90,7 @@ is_deeply $result, [1, 2], 'right structure';
 
 # No result
 ($fail, $result) = ();
-Mojo::IOLoop::Subprocess::Sereal->new->run(
+Mojo::IOLoop->$_subprocess(
   sub {return},
   sub {
     my ($subprocess, $err, @results) = @_;
@@ -106,7 +104,7 @@ is_deeply $result, [], 'right structure';
 
 # Exception
 $fail = undef;
-Mojo::IOLoop::Subprocess::Sereal->new->run(
+Mojo::IOLoop->$_subprocess(
   sub { die 'Whatever' },
   sub {
     my ($subprocess, $err) = @_;
@@ -118,7 +116,7 @@ like $fail, qr/Whatever/, 'right error';
 
 # Non-zero exit status
 $fail = undef;
-Mojo::IOLoop::Subprocess::Sereal->new->run(
+Mojo::IOLoop->$_subprocess(
   sub { exit 3 },
   sub {
     my ($subprocess, $err) = @_;
@@ -127,20 +125,6 @@ Mojo::IOLoop::Subprocess::Sereal->new->run(
 );
 Mojo::IOLoop->start;
 like $fail, qr/Sereal/, 'right error';
-
-# Serialization error
-$fail       = undef;
-$subprocess = Mojo::IOLoop::Subprocess::Sereal->new;
-$subprocess->deserialize(sub { die 'Whatever' });
-$subprocess->run(
-  sub { 1 + 1 },
-  sub {
-    my ($subprocess, $err) = @_;
-    $fail = $err;
-  }
-);
-Mojo::IOLoop->start;
-like $fail, qr/Whatever/, 'right error';
 
 # Blessed result with FREEZE/THAW
 {package Mojo::IOLoop::Subprocess::Sereal::TestFreeze;
