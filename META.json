@@ -151,7 +151,7 @@
                }
             },
             "name" : "@Author::DBOOK/Git::Contributors",
-            "version" : "0.024"
+            "version" : "0.027"
          },
          {
             "class" : "Dist::Zilla::Plugin::MetaNoIndex",

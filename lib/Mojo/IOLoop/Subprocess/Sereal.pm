@@ -22,7 +22,7 @@ our $_subprocess = sub {
   my $ioloop = shift;
   my $subprocess = __PACKAGE__->new;
   weaken $subprocess->ioloop(ref $ioloop ? $ioloop : $ioloop->singleton)->{ioloop};
-  return $subprocess->deserialize($deserialize)->serialize($serialize)->run(@_);
+  return $subprocess->run(@_);
 };
 
 1;
@@ -56,7 +56,11 @@ Mojo::IOLoop::Subprocess::Sereal - Subprocesses with Sereal
 
   # Run from event loop (preferred)
   use Mojo::IOLoop::Subprocess::Sereal '$_subprocess';
+
+  # Arguments passed along to $subprocess->run()
   my $subprocess = Mojo::IOLoop->$_subprocess(sub {...}, sub {...});
+
+  # Start event loop if necessary
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head1 DESCRIPTION
@@ -68,9 +72,9 @@ reference types such as C<Regexp>. The
 L<Sereal::Encoder/"FREEZE/THAW CALLBACK MECHANISM"> is supported to control
 serialization of blessed objects.
 
-A C<$_subprocess> method can be exported to be used as a drop-in replacement
-for L<Mojo::IOLoop/"subprocess"> using L<Sereal> for data serialization. This
-is the preferred interface to avoid memory leaks.
+A C<$_subprocess> method can be exported which works as a drop-in replacement
+for L<Mojo::IOLoop/"subprocess"> while using L<Sereal> for data serialization.
+This is the preferred interface to avoid memory leaks.
 
 Note that L<Mojo::IOLoop::Subprocess> is EXPERIMENTAL and thus so is this
 module!
@@ -110,6 +114,33 @@ L<Sereal::Encoder>.
 
 L<Mojo::IOLoop::Subprocess::Sereal> inherits all methods from
 L<Mojo::IOLoop::Subprocess>.
+
+=head1 EXPORTS
+
+L<Mojo::IOLoop::Subprocess::Sereal> exports the following variables.
+
+=head2 $_subprocess
+
+  my $subprocess = Mojo::IOLoop->$_subprocess(sub {...}, sub {...});
+  my $subprocess = $loop->$_subprocess(sub {...}, sub {...});
+
+Build L<Mojo::IOLoop::Subprocess::Sereal> object to perform computationally
+expensive operations in subprocesses, without blocking the event loop.
+Callbacks will be passed along to L<Mojo::IOLoop::Subprocess/"run">.
+
+  # Operation that would block the event loop for 5 seconds
+  Mojo::IOLoop->$_subprocess(
+    sub {
+      my $subprocess = shift;
+      sleep 5;
+      return '♥', 'Mojolicious';
+    },
+    sub {
+      my ($subprocess, $err, @results) = @_;
+      say "Subprocess error: $err" and return if $err;
+      say "I $results[0] $results[1]!";
+    }
+  );
 
 =head1 BUGS
 
