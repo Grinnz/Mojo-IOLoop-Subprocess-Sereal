@@ -8,7 +8,7 @@ use Scalar::Util 'weaken';
 use Sereal::Decoder 'sereal_decode_with_object';
 use Sereal::Encoder 'sereal_encode_with_object';
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 our @EXPORT = '$_subprocess';
 
