@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.003     2016-09-27 01:55:58 EDT
   - Remove subclass interface in favor of exported $_subprocess method
     (This module does say EXPERIMENTAL!)
   - Export $_subprocess method by default
