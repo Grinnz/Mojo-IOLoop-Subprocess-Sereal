@@ -1,16 +1,29 @@
 package Mojo::IOLoop::Subprocess::Sereal;
 use Mojo::Base 'Mojo::IOLoop::Subprocess';
 
+use Exporter 'import';
+use Scalar::Util 'weaken';
 use Sereal::Decoder 'sereal_decode_with_object';
 use Sereal::Encoder 'sereal_encode_with_object';
 
 our $VERSION = '0.002';
 
+our @EXPORT_OK = '$_subprocess';
+
 my $deserializer = Sereal::Decoder->new;
-has deserialize => sub { sub { sereal_decode_with_object $deserializer, $_[0] } };
+my $deserialize = sub { sereal_decode_with_object $deserializer, $_[0] };
+has deserialize => sub { $deserialize };
 
 my $serializer = Sereal::Encoder->new({freeze_callbacks => 1});
-has serialize => sub { sub { sereal_encode_with_object $serializer, $_[0] } };
+my $serialize = sub { sereal_encode_with_object $serializer, $_[0] };
+has serialize => sub { $serialize };
+
+our $_subprocess = sub {
+  my $ioloop = shift;
+  my $subprocess = __PACKAGE__->new;
+  weaken $subprocess->ioloop(ref $ioloop ? $ioloop : $ioloop->singleton)->{ioloop};
+  return $subprocess->deserialize($deserialize)->serialize($serialize)->run(@_);
+};
 
 1;
 
@@ -41,6 +54,11 @@ Mojo::IOLoop::Subprocess::Sereal - Subprocesses with Sereal
   # Start event loop if necessary
   $subprocess->ioloop->start unless $subprocess->ioloop->is_running;
 
+  # Run from event loop (preferred)
+  use Mojo::IOLoop::Subprocess::Sereal '$_subprocess';
+  my $subprocess = Mojo::IOLoop->$_subprocess(sub {...}, sub {...});
+  Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
+
 =head1 DESCRIPTION
 
 L<Mojo::IOLoop::Subprocess::Sereal> is a subclass of
@@ -49,6 +67,10 @@ L<Sereal> is faster than L<Storable> and supports serialization of more
 reference types such as C<Regexp>. The
 L<Sereal::Encoder/"FREEZE/THAW CALLBACK MECHANISM"> is supported to control
 serialization of blessed objects.
+
+A C<$_subprocess> method can be exported to be used as a drop-in replacement
+for L<Mojo::IOLoop/"subprocess"> using L<Sereal> for data serialization. This
+is the preferred interface to avoid memory leaks.
 
 Note that L<Mojo::IOLoop::Subprocess> is EXPERIMENTAL and thus so is this
 module!

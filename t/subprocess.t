@@ -5,7 +5,7 @@ BEGIN { $ENV{MOJO_REACTOR} = 'Mojo::Reactor::Poll' }
 use Test::More;
 
 use Mojo::IOLoop;
-use Mojo::IOLoop::Subprocess::Sereal;
+use Mojo::IOLoop::Subprocess::Sereal '$_subprocess';
 
 # Huge result
 my ($fail, $result);
@@ -26,8 +26,7 @@ is $result, $$ . 0 . $subprocess->pid . ('x' x 100000), 'right result';
 # Custom event loop
 ($fail, $result) = ();
 my $loop = Mojo::IOLoop->new;
-$subprocess = Mojo::IOLoop::Subprocess::Sereal->new(ioloop => $loop);
-$subprocess->run(
+$loop->$_subprocess(
   sub {'♥'},
   sub {
     my ($subprocess, $err, @results) = @_;
@@ -79,8 +78,8 @@ is $result, 23, 'right result';
 Mojo::IOLoop->delay(
   sub {
     my $delay = shift;
-    Mojo::IOLoop::Subprocess::Sereal->new->run(sub {1}, $delay->begin);
-    Mojo::IOLoop::Subprocess::Sereal->new->run(sub {2}, $delay->begin);
+    Mojo::IOLoop->$_subprocess(sub {1}, $delay->begin);
+    Mojo::IOLoop->$_subprocess(sub {2}, $delay->begin);
   },
   sub {
     my ($delay, $err1, $result1, $err2, $result2) = @_;
@@ -152,8 +151,7 @@ like $fail, qr/Whatever/, 'right error';
 }
 
 ($fail, $result) = (undef, undef);
-my $subprocess = Mojo::IOLoop::Subprocess::Sereal->new;
-$subprocess->run(
+Mojo::IOLoop->$_subprocess(
   sub { Mojo::IOLoop::Subprocess::Sereal::TestFreeze->new(abc => 'test') },
   sub {
     my ($subprocess, $err, $obj) = @_;

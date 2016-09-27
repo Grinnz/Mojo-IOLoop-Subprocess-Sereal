@@ -25,7 +25,9 @@ my %WriteMakefileArgs = (
   "MIN_PERL_VERSION" => "5.010001",
   "NAME" => "Mojo::IOLoop::Subprocess::Sereal",
   "PREREQ_PM" => {
+    "Exporter" => 0,
     "Mojolicious" => "7.05",
+    "Scalar::Util" => 0,
     "Sereal" => "3.001"
   },
   "TEST_REQUIRES" => {
@@ -33,16 +35,18 @@ my %WriteMakefileArgs = (
     "File::Spec" => 0,
     "Test::More" => "0.88"
   },
-  "VERSION" => "0.001",
+  "VERSION" => "0.002",
   "test" => {
     "TESTS" => "t/*.t"
   }
 );
 
 my %FallbackPrereqs = (
+  "Exporter" => 0,
   "ExtUtils::MakeMaker" => 0,
   "File::Spec" => 0,
   "Mojolicious" => "7.05",
+  "Scalar::Util" => 0,
   "Sereal" => "3.001",
   "Test::More" => "0.88"
 );
