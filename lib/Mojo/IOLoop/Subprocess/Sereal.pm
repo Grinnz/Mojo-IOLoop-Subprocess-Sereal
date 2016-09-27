@@ -56,7 +56,7 @@ Mojo::IOLoop::Subprocess::Sereal - Subprocesses with Sereal
 
 =head1 DESCRIPTION
 
-L<Mojo::IOLoop::Subprocess::Sereal> provides a C<$_subprocess> method which
+L<Mojo::IOLoop::Subprocess::Sereal> provides a L</"$_subprocess"> method which
 works as a drop-in replacement for L<Mojo::IOLoop/"subprocess"> while using
 L<Sereal> for data serialization. L<Sereal> is faster than L<Storable> and
 supports serialization of more reference types such as C<Regexp>. The
