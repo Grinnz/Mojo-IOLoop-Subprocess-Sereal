@@ -39,7 +39,7 @@
       "runtime" : {
          "requires" : {
             "Exporter" : "0",
-            "Mojolicious" : "7.05",
+            "Mojolicious" : "7.12",
             "Scalar::Util" : "0",
             "Sereal" : "3.001",
             "perl" : "5.010001"

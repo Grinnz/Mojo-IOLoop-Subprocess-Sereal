@@ -26,7 +26,7 @@ my %WriteMakefileArgs = (
   "NAME" => "Mojo::IOLoop::Subprocess::Sereal",
   "PREREQ_PM" => {
     "Exporter" => 0,
-    "Mojolicious" => "7.05",
+    "Mojolicious" => "7.12",
     "Scalar::Util" => 0,
     "Sereal" => "3.001"
   },
@@ -45,7 +45,7 @@ my %FallbackPrereqs = (
   "Exporter" => 0,
   "ExtUtils::MakeMaker" => 0,
   "File::Spec" => 0,
-  "Mojolicious" => "7.05",
+  "Mojolicious" => "7.12",
   "Scalar::Util" => 0,
   "Sereal" => "3.001",
   "Test::More" => "0.88"
