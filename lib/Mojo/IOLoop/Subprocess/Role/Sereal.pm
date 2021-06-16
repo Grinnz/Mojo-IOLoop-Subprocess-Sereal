@@ -4,7 +4,7 @@ use Role::Tiny;
 use Sereal::Decoder;
 use Sereal::Encoder;
 
-our $VERSION = '1.002';
+our $VERSION = '1.003';
 
 requires qw(deserialize serialize);
 
